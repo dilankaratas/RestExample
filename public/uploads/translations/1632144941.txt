@@ -1,0 +1,328 @@
+Gün 1
+
+
+Php programlama dilinde kullanılan mvc tabanlı ve web uygulamaları geliştirilmesini sağlayan Laravel framwork'u ile bir blog sitesi tasarlanması hedeflenmiştir.
+
+Laravel'in kullanılması için bazı sunucu gereklilikleri ve php modüllerinin kurulması ve ayarlanması gerekmektedir.Laravel'in dökümantasyonunda belirtildiği üzere;
+
+1.Wamp kurulumu
+2.Composer kurulumu
+3.PHP Extension ayarları
+
+Windows işletim sisteminde  kurulum işlemleri için bazı komutların terminal ekranına yazılması gerekmektedir. Bu komutlar şu şekildedir;
+
+
+1.composer global require laravel/installer
+2.composer create-project laravel/laravel example-app
+3.cd example-app
+php artisan serve
+
+
+-Yukardaki  yapılan işlem şu aslında , cd komutu ile example-app klasörünün içine girdik ve php artisan serve yazılarak proje başlatıldı.
+
+-http://127.0.0.1:8000 ise projeyi tarayıcı üzerinden açabileceğimiz lokal domain ve port bilgileridir.
+
+-En sonda ise  Laravel'in kendi "Welcome" sayfası ile Laravel projesi tarayıcıda açılmıştır.
+
+
+
+
+Gün 2
+
+
+Web sitesi için kullanılacak olan temayı parçalama işlemleri gerçekleştirildi. En çok kullanılan tasarım kalıbı header,content,footer olduğu için bu kalıplar tagların başlangıç ve bitiş etiketlerine kadar alınmıştır. Html tasarımını parçalama sebebi ise; bir hata aldığınızda o hatayı onlarca karışık kod bloğunda aramak yerine bölünmüş dosyalarda daha kısa kodlar içinde aramak size hatayı daha kısa sürede bulma da yardımcı olacaktır. Aynı şekilde yapılan küçük değişiklerin bütün bir tasarıma etki etmesini önlemektir. Daha sonra bölünen sayfalar  anasayfaya "include" fonksiyonu ile eklendi.
+
+-@İnclude(“header.php”);
+-@İnclude(“content.php”);
+-@İnclude(“footer.php”);
+
+Bir sonraki işlemler ise şu şekildedir;
+
+1. Dahil edilen dosyaların yolları tanımlandı.
+2.Master layoutlar oluşturuldu.
+3.Public dizini içerisine resimler,javascript ve CSS dosyaları için klasörler  oluşturuldu.
+
+
+Gün 3 
+
+
+Blog sitesi içerisinde kullanıcıların içeriklere ulaşabilmesi için bir kategori tasarımı oluşturulmuştur. Ve bu kategori için laravel dizininde bulunan .env klasörü ile mysql bağlantısı yapıldıktan sonra bir tablo oluşturularak kontrol edilmesi hedeflenmiştir.Database dizini yani .env dizini veritabanı ile ilgili tüm işlemlerin saklandığı dizindir. Veritabanı tablolarınızı buradan oluşturabilir ve düzenleyebilir, tabloları otomatik olarak verilerle doldurabilirsiniz. Yani sürekli olarak uygulama geliştirirken mysql veya phpmyadmine giderek işlem yapmak zorunluluğunu ortadan kaldırmaktadır.
+
+
+Kategori tasarımı için yapılan işlemler 
+
+1. "Php artisan make:migration categories --create=categories komutunu yazarak bir migration oluşturuldu.Migrationları kısaca anlatmak gerekirse veritabanı yapınızı kolaylıkla oluşturmanızı sağlar ve hiçbir veritabanı koduna ihtiyaç duymadan bütün yapınızı kurabilirsiniz. Pek çok özelliği basit Class methodları ile çözebilirken ilişkisel bağlantılarınızı hızlı bir şekilde inşa edebiliyorsunuz. Ayrıca Migrationlar sayesinde ekip çalışmalarında oluşabilecek veritabanı değişikliklerinden oluşan sorunlarda da büyük rahatlık sağlıyorsunuz. 
+
+
+2.Method ve parametreler ile tabloda ki sütünlar tanımlandı. Ve sütünların veri tipleri tanımlandı.
+
+3."Php artisan migrate" komutu ile oluşturulan tablo mysql'e dahil edildi.
+
+4.Kategori tablosu için bir "Seeder" oluşturulmuştur. Seeder kullanım amacı ise Laravel içerisinde Seeder sınıfından türetilen yani extend edilen bu sınıflarımız veri işleme noktasında bize kolaylık sağlamaktadır. Mantık olarak veritabanı yapımıza uygun bir şekilde oluşturduğumuz dizileri kullanan Seeder’lar veri tabanı oluşturduğumuzda veya hızlı kayıtlar eklemek istediğimiz birkaç komut yardımı ile dizilerimi veritabanına işlemektedir. Test işlemlerinde ve paket yazılım hizmetlerinde oldukça kolaylık sağlayan Seeder’lar migrationlarımız ile de birlikte çalıştığı için tek komut yardımı ile hem veritabanı inşasını hem de varsayılan kayıtların oluşturulmasını sağlayabilmektedir.
+
+5.Seeder içerisine "insert" komutu ile 7 adet kategori girişi yapılmıştır. Ve "Php artisan db:seed" komutu ile çalıştırılmıştır.
+
+6. Oluşturulan tabloda ki verileri görüntülemek için bir "Controller" oluşturulmuştur. Controller kısaca kullanım amacı ise ; MVC yapısında frontend ve backend arasında işlem gören katmandır.Kullanıcıların önyüzde etkileşimde oldukları bir form ile bu formun veritabanında yapılacağı sorgular arasında işlem yapılan kısmıdır.Veritabanı işlemlerini ve/veya kullanıcıdan gelen verileri işleyeceğimiz bölümdür.
+
+7.İndex methodu controller da oluşturulduktan view'de göstereceği form sayfası yazdırılmıştır. Ve bu sayfanın yönlendirilmesi için bir "route" oluşturulmuştur.
+
+8.Route::get('/', [HomeController::class, 'index'])->name('homepage'); rotası ile verilerin gideceği ön yüz belirtilmiştir.
+
+9. Daha sonra bir "Model" oluşturulmuştur. Kısaca bahsetmek gerekir ise ;  Modeller,MVC yapısında veritabanı işlemlerinin yapıldığı bölümdür.Backend işlemlerinin  Controller tarafından yapıldığından Controller, Model aracılığı ile bu işlemleri yapmaktadır. Yani Model, veritabanı iletişiminden sorumlu kısımdır.
+
+10. Ve son olarak ise oluşturulan datalar controller ( view()->share('categories',Category::inRandomOrder()->get());   ) yardımı ile ekrana  basılmıştır. 
+
+
+
+Gün 4
+
+1.Blog database içerine içerikler için  migration ve model oluşturuldu.
+2.Laravel faker kütüphanesi ile içeriye demo yazılar eklendi.
+3.Bu yazıları anasayfada listeleme işlemlerini gerçekleştirildi.
+4.Kullanışlı helperlar ile düzenlemeler yapıldı.
+5."Articles" tablosu için ilgili seeder'da veri ekleme işlemleri gerçekleştirildi.
+6.İlgili controller da kullanılan modeller tanımlandı.(use App\Models\Article;) şeklinde tanımlanmıştır.
+7.İlgili datalar view ekranına basılmıştır.
+
+
+
+Gün 5
+
+
+1.Blog yazılarımızın listeleme sayfasını tasarlandı.
+2.Statik arka plan resmi fonksiyonlarını yazdırıldı.. 
+3.Seo url ve kategori gösterme işlemlerini gerçekleştirildi.
+4.Model dizinleri içerisine tablolara ait ilişkiler yazıldı.
+    -function getCategory(){
+     return $this->hasOne('App\Models\Category','id','category_id');
+
+5.Categoriler için bir widget oluşturulmuştur.Kısaca Widget (Bileşen), kullanıcı grafik arayüzü üzerinde yer alan, herhangi bir veri yada bilgiyi kullanıcıya aktaran küçük bir katman veya programların tümüdür. Küçük programcıklar veya işlevsel kutular olarak da tanımlayabileceğimiz bu fonksiyonel elementlerin amacı kullanıcı arayüzünü daha zengin bir görünüme sokmak ve bunun yanı sıra kullanıcılara ekstradan işlevler sunmaktadır.
+
+
+
+Gün 6
+
+
+1.Blog yazılarımızı kategori listeleme sayfasını tasarlandı.
+2.Kategorilerde kaç yazı var olduğunu gösteren ilişkiler yazıldı.
+3.Kategori ve içerikler için yanlış route'ları engellemek için kullanıcılara hata mesajları oluşturuldu.
+
+
+Gün 7
+
+1.Pagination ile yazıları istediğimiz aralıklarla listeleme işlemlerini gerçekleştirildi.
+2.Blog yazılarını kategorileri içinde sayfalama işlemlerini yaptık.
+3.Pagination kullanım amacı ise; doğru bir şekilde planlanmayan pagination, Google tarama botlarına olumsuz sinyaller gönderdiği için SEO performansınızı kötü etkileyecektir. Bunun sonucunda, doğal olarak Arama Motoru Sonuç Sayfalarında (SERP) alt sıralara düşerek trafik kaybına sebep olabilir.
+Ayrıca yanlış kullanımın bir diğer sonucu da içeriklerinizin duplicate (kopya) içerik olmasına ve crawl depth’e (tarama derinliği) olumsuz etki ederek GoogleBot’lar açısından yanlış anlaşılmaya sebep olabilir. 
+4.Pagination kullanmak için "AppServiceProvider.php" klasörüne "use Illuminate\Pagination\Paginator;" kütüphanesi eklendi. "Boot" adında fonksiyonumuzun içine " Paginator::useBootstrap();" eklenerek sayfada uyumlu durması sağlanmıştır.
+
+
+Gün 8
+
+1.Veritabanında profesyonel  menü sayfaları oluşturuldu.
+2.Bu sayfaları sitenin menüsünde gösterme işlemi gerçekleştirildi. 
+3.Sayfaların içerik işlemlerini gerçekleştirildi.
+4.Database için gerekli olan migration,model ve seed'ler oluşturuldu ve bağlantıları controller üzerinden yapılmıştır.
+5.Sayfaların sütünları ise 'title','slug','image','content','order','created_at','updated_at' olmak üzere 7 tane insert işlemi gerçekleştirilmiştir.
+6.Son olarak ise blade sayfalarında ilgili route linkleri verilmiştir.
+
+
+Gün 9
+
+1.Projenin iletişim sayfasını hazırlandı.
+2.Contact sayfası için blade oluşturuldu ve bir şablon hazırlandı.
+3. İlgili route blade sayfasına tanımlanmıştır.
+4.İletişim sayfası için bir validation tanımlanmıştır.Validation kısaca ;(Form Doğrulama) kütüphanesi, post, get, request, vb. yöntemlerle gelen verilerin sunucu tarafında kontrol edip belirlenen kriterlere uymasını zorunlu tutar. Bu kriterlere uymayan durumları kullanıcıya bildirir.
+5.Son olarak contact sayfasına bir redirect yazdırılarak gönderilen mesajı veritabanımıza kaydederek işleme alınmıştır.
+6.Redirect:Web sunucuları içerisinde verilen bir komut vasıtasıyla bir adresin farklı bir adrese geçici veya kalıcı olarak yönlendirilmesine denir.
+
+
+
+Gün 10
+
+1.Projenin yönetim paneline girişi yapılmıştır.
+2.Oluşturulan temanın dashboard ile ilgili fonksiyon tanımlaması yapılmıştır.
+3.Oluşturulan tema parçalanmıştır.
+4.Parçalanan sayfalar master.blade sayfasında include edilmiştir.
+5.Ön yüzde bulunan ilgili alanlara route tanımlamaları blade sayfalarında url alanlarına tanımlanmıştır.
+
+
+Gün 11
+
+1.Projemize admin tablosu eklendi.
+2.Yönetici paneline giriş işlemleri sağlandı.
+3.Güvenlik işlemlerini sağlamak için laravel middleware yapısını kullanıldı.
+4.Admin tablosu için migration,model ve seed yapıları oluşturuldu.
+5.Admin tablosuna string veri türünde 3 adet sütun girişi yapılmıştır.
+6.use Illuminate\Foundation\Auth\User as Authenticatable; kütüphanesi admin modeline eklenmiştir.
+7.Login ve loginPost fonsiyonlarına koşul ifadeleri ile yetkilendirme işlemleri yapılmıştır.
+
+
+
+Gün 12
+
+
+1.Admin paneline dışarıdan erişimi kapatıldı. Giriş yapmadan hiçbir şekilde yönetici paneline ulaşamaması için laravel middleware yapısını kullanıldı.
+2.Middleware kısaca ;ara katmandır,uygulamamıza gelen HTTP isteklerini incelemek, kontroller yapmak, filtrelemek için bize uygun bir yapı sağlayan katmandır.
+3.Öncelikle terminal ekranında "Isadmin" adında bir ara katman oluşturulmuştur.
+4.Oluşturulan ara güvenlik katmanının uygulamaya her HTTP isteği sırasında çalışması için, basitçe katman sınıfını listelemek  mülkiyet sınıfına.app/Http/Kernel.php sayfasında bir isim verilerek tanımlanmıştır.
+
+
+Gün 13
+
+
+1.Admin panelinde ilk crud işlemleri gerçekleştirmeye başlandı. 
+2.Menüler düzenlendi.
+3.Resource Controller ile crud yapısını benimsenmiştir.
+4."Article" tablosu için bir menü ve bir controller oluşturulmuştur.
+5.Laravel ile bir controllerda CRUD C-Create, R-Read,U-Update, D-Delete işlemi yapılacaksa controller dosyasını oluştururken artisan comutunda --resource ön ekini kullanmamız yeterli olacaktır.Resource Controller Oluşturmak için artisan Komutumuz:php artisan make:controller PhotoController --resource
+6.Oluşturulan controller'a ilgili olan "Article" tablosunun modeli tanımlanmıştır.
+7. orderBy yöntemi ile içerikler sıralanmıştır.OrderBy; sorgunun sonuçlarını belirli bir sütuna göre sıralamanıza olanak tanır. orderBy yöntemi tarafından kabul edilen ilk parametre, sıralamak istediğiniz sütun olmalıdır, ikinci argüman ise sıralamanın yönünü belirler ve artan veya azalan olabilir.
+8.Get methodu ile  HTML Formu üzerinden doldurulan tüm veriler Url üzerinden gönderileceği veriler yazdırıldı.
+
+
+
+Gün 14
+
+
+1.Admin panelinde ilk makale oluşturma insert işlemini gerçekleştirildi. 
+2.Makale fotoğrafını projeye upload etme ve veritabanına yazdırma işlemlerini gerçekleştirildi.
+3.Projeye dışarıdan Toastr paketi dahil edildi.
+4.Ayrıca resim upload ederken bir takım validasyonlar gerçekleştirildi.
+
+
+Gün 15
+
+1.Eklediğimiz makaleleri güncelleme işlemlerini gerçekleştirildi.
+2.Makaleyi hızlı pasif veya aktife almak için switch kullanarak anlık işlem yapıldı.
+3.Switch kullanımı için index sayfasına section komutu ile css ve js linkleri eklendi.
+4.Makaleleri güncellemek için blade sayfası oluşturuldu ve ilgili route'lar include edildi.
+
+
+
+Gün 16
+
+1.Eklediğimiz makaleleri veritabanından silme işlemlerini gerçekleştirdik.
+2.Her sildiğimiz veri direkt yok olmasını engellemek için laravelin soft delete yapısını kullanarak silinen verileri geri dönüşüm kutusuna gönderildi. 
+3.Geri dönüşüm kutusundan silinen verileri kurtarma veya tamamen silme işlemlerini gerçekleştirildi. Ayrıca silinen makaleye ait tüm dosyalarıda yok edildi.
+
+
+Gün 17
+
+1.Yönetim panelinden kategori işlemlerini gerçekleştirildi.
+2.Yeni kategori ekleme komutlarını yazdırıldı. 
+3.Kategorilere aktif/pasif lik durumu eklendi. 
+4.Tüm kategorilerimizi tabloda listeleme işlemlerini gerçekleştirildi.
+
+
+Gün 18
+
+1.Yönetim panelinden kategori işlemlerini gerçekleştirildi. 
+2.Eklenilen kategorileri aynı sayfada jquery ve ajax yardımıyla anlık güncelleme işlemleri gerçekleştirdi.
+3.Aynı kategori var ise eğer hata verilmesi sağlandı.
+
+
+
+Gün 19
+
+1.Yönetim panelinden kategori işlemlerine devam edildi.
+2.Eklenilen kategorileri silme işlemleri gerçekleştirildi.
+3.Kategori silerken o kategoriye ait makale varsa koşullarında yapılması gereken durumlar üzerine algoritma yazıldı.Böylelikle sıfır hatasız bir blog projesi geliştirildi.
+
+Gün 20
+ 
+1.Yönetim panelinden sayfalarımızın görüntülenmesi gerçekleştirildi.
+2.Sayfalara aktif pasiflik sütunu oluşturuldu.
+3.Anlık ajax ile sayfanın durumunu değiştirilmesi gerçekleştirildi.
+
+
+
+Gün 21
+
+1.Yönetim panelinden sayfa oluşturma ve güncelleme işlemlerini gerçekleştirdik.
+
+ 
+
+Gün 22
+
+1.Yönetim panelinden oluşturulan sayfaların sıralamasını jquery kütüphanesi olan sortable.js ile anlık değiştirme durumu yapıldı.
+2.Sayfaların sıralamalarını güncelleyip ekrana bununla ilgili mesaj basıldı.
+
+
+Gün 23
+
+
+1.İletişimden gönderilen mesajları mailtrap.io kullanarak smtp olarak ilgili mail adresine gönderme işlemi gerçekleştirildi.
+
+
+
+
+Gün 24
+
+
+1.Ayarlar tablosu oluşturup sitemize ait ayar işlemlerini gerçekleştirildi.
+2.Sosyal medya linkleri oluşturuldu ve kontrol edildi.
+3.Sitenin aktiflik durumları kontrol edildi.
+
+
+Gün 25
+
+1.Şimdiye kadar yazılmış olan bütün kodlar kontrol edildi.
+2.Algoritmalar incelendi ve algoritmalar üzerinde düzenlemeler yapıldı.
+3.Yönetim panelinde panel sayfası düzenlendi.
+
+Gün 26
+
+
+
+1.Yeni github repository oluşturma işlemi yapıldı.
+2.Proje push ve pull işlemleri yapıldı. Git nedir ? nasıl kullanılır ?  github nedir nasıl kullanılır gibi sorulara cevaplar oluşturuldu. 
+
+Gün 27
+
+
+1.Hosting ve domain satın alma işlemlerini ,
+2.Laravel projesini hostinge aktarma , ssl , mail , subdomain, wordpress kurulumu ve bir çok cpanel işlemleri yapıldı.
+
+
+
+Gün 28
+
+1.Cpanel'de dosya yöneticisi kullanımı yapıldı.
+2.Cpanel'de FTP Hesabı oluşturuldu.
+3.Filezilla kurulumu ve kullanımı tamamlandı.
+4.Cpanelde veritabanı oluşturuldu.
+5.Veritabanı içe aktar ve dışarı aktar işlemleri tamamlandı.
+6.Cpanelde ücretsiz SSL tanımlama işlemi yapıldı.
+7.Laravel projesini paylaşımlı hostingde çalıştırma işlemi tamamlandı.
+8.Env dosyası ayarları yapıldı.
+9.Paylaşımlı sunucu htaccess ayarı yapıldı.
+
+
+Gün 29
+
+
+1.Cpanelde mail hesabı oluşturuldu.
+2.Cpanelde webmail kullanımı, mail göndermek, mail alma işlemleri uygulandı.
+3.Cpanel'de subdomain oluşturuldu.
+4.Cpanelde hazır script kurulum işlemi uygulandı.
+
+
+Gün 30
+
+
+1.Cpanelde wordpress kurulumu yapıldı.
+2.Cpanelde hosting php versiyon ayarları ve php sürümü yükseltme&azaltma işlemleri uygulandı.
+3.Cpanelde hosting ve veritabanı yedeği alma, yedek yönetimi işlemleri tamamlandı.
+4. Proje teslimi gerçekleştirildi.
+
+
+
+
+
+
+
+
+
+
+  
